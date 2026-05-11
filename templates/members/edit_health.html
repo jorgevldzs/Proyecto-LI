@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Editar salud — MotoClub{% endblock %}
+
+{% block content %}
+<h3 class="mb-4"><i class="bi bi-heart-pulse-fill text-danger"></i> Editar información de salud</h3>
+<div class="alert alert-info py-2">
+  <i class="bi bi-info-circle"></i> Esta información es visible para otros miembros activos por razones de seguridad.
+</div>
+<div class="section-card col-md-10">
+  <form method="post">
+    {% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">{{ form.blood_type.label }}</label>
+        {{ form.blood_type }}
+        {% if form.blood_type.errors %}<div class="text-danger small">{{ form.blood_type.errors.0 }}</div>{% endif %}
+      </div>
+    </div>
+    {% for toggle_name, detail_name, label in toggle_pairs %}{% endfor %}
+
+    {% for field in form %}
+      {% if field.name != 'blood_type' %}
+        <div class="row g-3 mt-1 align-items-start health-row" data-field="{{ field.name }}">
+          <div class="col-md-4">
+            <label class="form-label">{{ field.label }}</label>
+            {% if field.field.widget.input_type == 'checkbox' %}
+              <div class="form-check">
+                {{ field }}
+                <label class="form-check-label" for="{{ field.id_for_label }}">Sí</label>
+              </div>
+            {% else %}
+              {{ field }}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-danger">Guardar cambios</button>
+      <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('select').forEach(el => el.classList.add('form-select'));
+document.querySelectorAll('textarea').forEach(el => el.classList.add('form-control'));
+</script>
+{% endblock %}

@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% block title %}Inscripción — MotoClub{% endblock %}
+
+{% block extra_head %}
+<style>
+  .form-section { border-left: 4px solid #dc3545; padding-left: 1rem; margin-bottom: 1.5rem; }
+  .optional-section { display: none; }
+  .conditional-field { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-person-plus-fill text-danger"></i> Formulario de inscripción</h2>
+
+{% if personal_form.errors or contact_form.errors or health_form.errors or ec1_form.errors or v1_form.errors or acceptance_form.errors %}
+  <div class="alert alert-danger">
+    <strong>Por favor corrige los errores marcados abajo.</strong>
+  </div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+
+  <!-- 1. Datos personales -->
+  <div class="section-card">
+    <h5 class="section-title"><i class="bi bi-person-fill"></i> 1. Datos personales</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Nombre(s) <span class="text-danger">*</span></label>
+        {{ personal_form.first_name }}
+        {% if personal_form.first_name.errors %}<div class="text-danger small">{{ personal_form.first_name.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Apellidos <span class="text-danger">*</span></label>
+        {{ personal_form.last_name }}
+        {% if personal_form.last_name.errors %}<div class="text-danger small">{{ personal_form.last_name.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Sexo <span class="text-danger">*</span></label>
+        {{ personal_form.sex }}
+        {% if personal_form.sex.errors %}<div class="text-danger small">{{ personal_form.sex.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Fecha de nacimiento <span class="text-danger">*</span></label>
+        {{ personal_form.birth_date }}
+        {% if personal_form.birth_date.errors %}<div class="text-danger small">{{ personal_form.birth_date.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Foto <span class="text-muted">(opcional)</span></label>
+        {{ personal_form.photo }}
+        {% if personal_form.photo.errors %}<div class="text-danger small">{{ personal_form.photo.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Correo electrónico <span class="text-danger">*</span></label>
+        {{ personal_form.email }}
+        {% if personal_form.email.errors %}<div class="text-danger small">{{ personal_form.email.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Contraseña <span class="text-danger">*</span></label>
+        {{ personal_form.password1 }}
+        {% if personal_form.password1.errors %}<div class="text-danger small">{{ personal_form.password1.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Confirmar contraseña <span class="text-danger">*</span></label>
+        {{ personal_form.password2 }}
+        {% if personal_form.password2.errors %}<div class="text-danger small">{{ personal_form.password2.errors.0 }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Datos de contacto -->
+  <div class="section-card">
+    <h5 class="section-title"><i class="bi bi-house-fill"></i> 2. Datos de contacto</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Calle <span class="text-danger">*</span></label>
+        {{ contact_form.street }}
+        {% if contact_form.street.errors %}<div class="text-danger small">{{ contact_form.street.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Núm. casa <span class="text-danger">*</span></label>
+        {{ contact_form.house_number }}
+        {% if contact_form.house_number.errors %}<div class="text-danger small">{{ contact_form.house_number.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Colonia <span class="text-danger">*</span></label>
+        {{ contact_form.neighborhood }}
+        {% if contact_form.neighborhood.errors %}<div class="text-danger small">{{ contact_form.neighborhood.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Número celular <span class="text-danger">*</span></label>
+        {{ contact_form.phone }}
+        {% if contact_form.phone.errors %}<div class="text-danger small">{{ contact_form.phone.errors.0 }}</div>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Salud -->
+  <div class="section-card">
+    <h5 class="section-title"><i class="bi bi-heart-pulse-fill"></i> 3. Información de salud</h5>
+    <div class="alert alert-info py-2">
+      <i class="bi bi-info-circle"></i> Esta información será visible para otros miembros activos por razones de seguridad.
+    </div>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <label class="form-label">Grupo sanguíneo <span class="text-danger">*</span></label>
+        {{ health_form.blood_type }}
+        {% if health_form.blood_type.errors %}<div class="text-danger small">{{ health_form.blood_type.errors.0 }}</div>{% endif %}
+      </div>
+    </div>
+
+    {% for toggle_field, detail_field, toggle_id in health_toggles %}
+    {% endfor %}
+
+    <!-- Alergias -->
+    <div class="row g-3 mt-1">
+      <div class="col-md-4">
+        <label class="form-label">¿Tiene alergias? <span class="text-danger">*</span></label>
+        <div class="form-check">
+          <input class="form-check-input health-toggle" type="checkbox" id="id_h-has_allergies"
+                 name="h-has_allergies" data-target="allergies-detail"
+                 {% if health_form.has_allergies.value %}checked{% endif %}>
+          <label class="form-check-label" for="id_h-has_allergies">Sí</label>
+        </div>
+      </div>
+      <div class="col-md-8 conditional-field" id="allergies-detail">
+        <label class="form-label">Especifique</label>
+        {{ health_form.allergies_detail }}
+      </div>
+    </div>
+
+    <!-- Padecimiento físico -->
+    <div class="row g-3 mt-1">
+      <div class="col-md-4">
+        <label class="form-label">¿Padecimiento físico? <span class="text-danger">*</span></label>
+        <div class="form-check">
+          <input class="form-check-input health-toggle" type="checkbox" id="id_h-has_physical_condition"
+                 name="h-has_physical_condition" data-target="physical-detail"
+                 {% if health_form.has_physical_condition.value %}checked{% endif %}>
+          <label class="form-check-label" for="id_h-has_physical_condition">Sí</label>
+        </div>
+      </div>
+      <div class="col-md-8 conditional-field" id="physical-detail">
+        <label class="form-label">Especifique</label>
+        {{ health_form.physical_condition_detail }}
+      </div>
+    </div>
+
+    <!-- Tratamiento médico -->
+    <div class="row g-3 mt-1">
+      <div class="col-md-4">
+        <label class="form-label">¿Bajo tratamiento médico? <span class="text-danger">*</span></label>
+        <div class="form-check">
+          <input class="form-check-input health-toggle" type="checkbox" id="id_h-under_medical_treatment"
+                 name="h-under_medical_treatment" data-target="treatment-detail"
+                 {% if health_form.under_medical_treatment.value %}checked{% endif %}>
+          <label class="form-check-label" for="id_h-under_medical_treatment">Sí</label>
+        </div>
+      </div>
+      <div class="col-md-8 conditional-field" id="treatment-detail">
+        <label class="form-label">Especifique</label>
+        {{ health_form.treatment_detail }}
+      </div>
+    </div>
+
+    <!-- Medicamento -->
+    <div class="row g-3 mt-1">
+      <div class="col-md-4">
+        <label class="form-label">¿Toma medicamento? <span class="text-danger">*</span></label>
+        <div class="form-check">
+          <input class="form-check-input health-toggle" type="checkbox" id="id_h-takes_medication"
+                 name="h-takes_medication" data-target="medication-detail"
+                 {% if health_form.takes_medication.value %}checked{% endif %}>
+          <label class="form-check-label" for="id_h-takes_medication">Sí</label>
+        </div>
+      </div>
+      <div class="col-md-8 conditional-field" id="medication-detail">
+        <label class="form-label">Especifique</label>
+        {{ health_form.medication_detail }}
+      </div>
+    </div>
+
+    <!-- Seguro médico -->
+    <div class="row g-3 mt-1">
+      <div class="col-md-4">
+        <label class="form-label">¿Posee seguro médico? <span class="text-danger">*</span></label>
+        <div class="form-check">
+          <input class="form-check-input health-toggle" type="checkbox" id="id_h-has_insurance"
+                 name="h-has_insurance" data-target="insurance-detail"
+                 {% if health_form.has_insurance.value %}checked{% endif %}>
+          <label class="form-check-label" for="id_h-has_insurance">Sí</label>
+        </div>
+      </div>
+      <div class="col-md-8 conditional-field" id="insurance-detail">
+        <label class="form-label">NSS o detalles</label>
+        {{ health_form.insurance_detail }}
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Contacto de emergencia -->
+  <div class="section-card">
+    <h5 class="section-title"><i class="bi bi-telephone-plus-fill"></i> 4. Contacto de emergencia</h5>
+    <div class="alert alert-info py-2">
+      <i class="bi bi-info-circle"></i> Esta información será visible para otros miembros activos por razones de seguridad.
+    </div>
+
+    <h6 class="fw-semibold mb-3">Contacto 1 <span class="text-danger">*</span></h6>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">Nombre(s)</label>
+        {{ ec1_form.first_name }}
+        {% if ec1_form.first_name.errors %}<div class="text-danger small">{{ ec1_form.first_name.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Apellidos</label>
+        {{ ec1_form.last_name }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Parentesco</label>
+        {{ ec1_form.relationship }}
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Celular</label>
+        {{ ec1_form.phone }}
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-add-ec2">
+        <i class="bi bi-plus-circle"></i> Agregar segundo contacto (opcional)
+      </button>
+    </div>
+
+    <div id="ec2-section" class="optional-section mt-3">
+      <h6 class="fw-semibold mb-3">Contacto 2 <span class="text-muted">(opcional)</span></h6>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Nombre(s)</label>
+          {{ ec2_form.first_name }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Apellidos</label>
+          {{ ec2_form.last_name }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Parentesco</label>
+          {{ ec2_form.relationship }}
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Celular</label>
+          {{ ec2_form.phone }}
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline-danger btn-sm mt-2" id="btn-remove-ec2">
+        <i class="bi bi-x-circle"></i> Quitar
+      </button>
+    </div>
+  </div>
+
+  <!-- 5. Vehículo(s) -->
+  <div class="section-card">
+    <h5 class="section-title"><i class="bi bi-motorcycle"></i> 5. Vehículo(s)</h5>
+
+    <h6 class="fw-semibold mb-3">Vehículo 1 <span class="text-danger">*</span></h6>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Modelo</label>
+        {{ v1_form.model }}
+        {% if v1_form.model.errors %}<div class="text-danger small">{{ v1_form.model.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Placa</label>
+        {{ v1_form.plate }}
+        {% if v1_form.plate.errors %}<div class="text-danger small">{{ v1_form.plate.errors.0 }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-add-v2">
+        <i class="bi bi-plus-circle"></i> Agregar otro vehículo (opcional)
+      </button>
+    </div>
+
+    <div id="v2-section" class="optional-section mt-3">
+      <h6 class="fw-semibold mb-3">Vehículo 2 <span class="text-muted">(opcional)</span></h6>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Modelo</label>
+          {{ v2_form.model }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Placa</label>
+          {{ v2_form.plate }}
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline-danger btn-sm mt-2" id="btn-remove-v2">
+        <i class="bi bi-x-circle"></i> Quitar
+      </button>
+    </div>
+  </div>
+
+  <!-- 6. Aceptación -->
+  <div class="section-card">
+    <h5 class="section-title"><i class="bi bi-file-check-fill"></i> 6. Aceptación</h5>
+    <div class="row g-2">
+      <div class="col-12">
+        <div class="form-check">
+          {{ acceptance_form.liability_release }}
+          <label class="form-check-label" for="{{ acceptance_form.liability_release.id_for_label }}">
+            {{ acceptance_form.liability_release.label }}
+          </label>
+          {% if acceptance_form.liability_release.errors %}
+            <div class="text-danger small">{{ acceptance_form.liability_release.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-check">
+          {{ acceptance_form.data_treatment }}
+          <label class="form-check-label" for="{{ acceptance_form.data_treatment.id_for_label }}">
+            {{ acceptance_form.data_treatment.label }}
+          </label>
+          {% if acceptance_form.data_treatment.errors %}
+            <div class="text-danger small">{{ acceptance_form.data_treatment.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-check">
+          {{ acceptance_form.photo_permission }}
+          <label class="form-check-label" for="{{ acceptance_form.photo_permission.id_for_label }}">
+            {{ acceptance_form.photo_permission.label }}
+          </label>
+          {% if acceptance_form.photo_permission.errors %}
+            <div class="text-danger small">{{ acceptance_form.photo_permission.errors.0 }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mb-5">
+    <button type="submit" class="btn btn-danger btn-lg px-5">
+      <i class="bi bi-send-fill me-2"></i> Enviar solicitud
+    </button>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add Bootstrap classes to all form inputs
+document.querySelectorAll('input[type=text], input[type=email], input[type=password], input[type=date], select, textarea, input[type=file]').forEach(el => {
+  if (!el.classList.contains('form-check-input') && !el.classList.contains('health-toggle')) {
+    el.classList.add('form-control');
+  }
+});
+document.querySelectorAll('select').forEach(el => {
+  el.classList.remove('form-control');
+  el.classList.add('form-select');
+});
+
+// Health conditional fields
+document.querySelectorAll('.health-toggle').forEach(checkbox => {
+  const targetId = checkbox.dataset.target;
+  const target = document.getElementById(targetId);
+  if (checkbox.checked) target.style.display = 'flex';
+  checkbox.addEventListener('change', () => {
+    target.style.display = checkbox.checked ? 'flex' : 'none';
+  });
+});
+
+// Optional sections
+function setupToggle(btnAddId, btnRemoveId, sectionId) {
+  const btnAdd = document.getElementById(btnAddId);
+  const btnRemove = document.getElementById(btnRemoveId);
+  const section = document.getElementById(sectionId);
+  if (!btnAdd) return;
+  btnAdd.addEventListener('click', () => {
+    section.style.display = 'block';
+    btnAdd.style.display = 'none';
+  });
+  if (btnRemove) {
+    btnRemove.addEventListener('click', () => {
+      section.style.display = 'none';
+      btnAdd.style.display = 'inline-block';
+      section.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    });
+  }
+}
+setupToggle('btn-add-ec2', 'btn-remove-ec2', 'ec2-section');
+setupToggle('btn-add-v2', 'btn-remove-v2', 'v2-section');
+
+// Keep optional sections visible on re-render if they had data
+{% if show_ec2 %}
+  document.getElementById('ec2-section').style.display = 'block';
+  document.getElementById('btn-add-ec2').style.display = 'none';
+{% endif %}
+{% if show_v2 %}
+  document.getElementById('v2-section').style.display = 'block';
+  document.getElementById('btn-add-v2').style.display = 'none';
+{% endif %}
+</script>
+{% endblock %}

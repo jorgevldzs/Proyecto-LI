@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Editar emergencia — MotoClub{% endblock %}
+
+{% block content %}
+<h3 class="mb-4"><i class="bi bi-telephone-plus-fill text-danger"></i> Editar contactos de emergencia</h3>
+<div class="section-card col-md-10">
+  <form method="post">
+    {% csrf_token %}
+    <h6 class="fw-semibold mb-3">Contacto 1 <span class="text-danger">*</span></h6>
+    <div class="row g-3">
+      {% for field in form1 %}
+        <div class="col-md-3">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<div class="text-danger small">{{ field.errors.0 }}</div>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <hr>
+    <h6 class="fw-semibold mb-3">Contacto 2 <span class="text-muted">(opcional)</span></h6>
+    <div id="ec2-section" {% if not has_ec2 %}style="display:none;"{% endif %}>
+      <div class="row g-3">
+        {% for field in form2 %}
+          <div class="col-md-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% if not has_ec2 %}
+      <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="btn-add-ec2">
+        <i class="bi bi-plus-circle"></i> Agregar segundo contacto
+      </button>
+    {% endif %}
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-danger">Guardar cambios</button>
+      <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('input[type=text]').forEach(el => el.classList.add('form-control'));
+const btnAdd = document.getElementById('btn-add-ec2');
+if (btnAdd) {
+  btnAdd.addEventListener('click', () => {
+    document.getElementById('ec2-section').style.display = 'block';
+    btnAdd.style.display = 'none';
+  });
+}
+</script>
+{% endblock %}

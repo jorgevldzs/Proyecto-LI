@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Inicio — MotoClub{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="p-5 mb-4 rounded-4 text-white" style="background: linear-gradient(135deg,#1a1a2e,#dc3545);">
+  <div class="container-fluid py-3">
+    <h1 class="display-5 fw-bold"><i class="bi bi-motorcycle"></i> MotoClub</h1>
+    <p class="col-md-8 fs-5">Hermandad, pasión y libertad sobre dos ruedas. Únete a nuestra comunidad de motociclistas.</p>
+    {% if not user.is_authenticated %}
+      <a href="{% url 'register' %}" class="btn btn-light btn-lg me-2">Solicitar inscripción</a>
+      <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Iniciar sesión</a>
+    {% else %}
+      <a href="{% url 'profile' %}" class="btn btn-light btn-lg">Mi perfil</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Quiénes somos -->
+<div class="row g-4 mb-4">
+  <div class="col-md-6">
+    <div class="section-card h-100">
+      <h3 class="section-title"><i class="bi bi-people-fill"></i> ¿Quiénes somos?</h3>
+      <p>Somos un club de motociclismo fundado con el propósito de reunir a personas apasionadas por las motocicletas, la carretera y la aventura.</p>
+      <p>Promovemos una cultura de manejo responsable, el respeto entre motociclistas y la solidaridad entre todos nuestros miembros.</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="section-card h-100">
+      <h3 class="section-title"><i class="bi bi-shield-check"></i> Nuestra misión</h3>
+      <p>Crear una comunidad unida y segura donde cada motociclista encuentre camaradería, apoyo y experiencias memorables en cada rodada.</p>
+      <ul class="list-unstyled mt-2">
+        <li><i class="bi bi-check-circle-fill text-danger me-2"></i> Rodadas organizadas mensualmente</li>
+        <li><i class="bi bi-check-circle-fill text-danger me-2"></i> Información de emergencia compartida</li>
+        <li><i class="bi bi-check-circle-fill text-danger me-2"></i> Comunidad de confianza</li>
+        <li><i class="bi bi-check-circle-fill text-danger me-2"></i> Eventos y convivencias</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Fotos recientes -->
+{% if photos %}
+<div class="section-card">
+  <h3 class="section-title"><i class="bi bi-images"></i> Fotos recientes</h3>
+  <div class="row g-3">
+    {% for photo in photos %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card border-0 shadow-sm h-100">
+          <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption }}"
+               style="height:180px;object-fit:cover;border-radius:8px 8px 0 0;">
+          {% if photo.caption %}
+            <div class="card-body p-2">
+              <small class="text-muted">{{ photo.caption }}</small>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- CTA -->
+{% if not user.is_authenticated %}
+<div class="text-center py-4">
+  <h4>¿Listo para unirte?</h4>
+  <a href="{% url 'register' %}" class="btn btn-danger btn-lg px-5">
+    <i class="bi bi-person-plus-fill me-2"></i> Solicitar inscripción
+  </a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Editar contacto — MotoClub{% endblock %}
+
+{% block content %}
+<h3 class="mb-4"><i class="bi bi-house-fill text-danger"></i> Editar datos de contacto</h3>
+<div class="section-card col-md-8">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<div class="text-danger small">{{ field.errors.0 }}</div>{% endif %}
+      </div>
+    {% endfor %}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-danger">Guardar cambios</button>
+      <a href="{% url 'profile' %}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('input[type=text], input[type=email], input[type=password], input[type=date], textarea, input[type=file]').forEach(el => el.classList.add('form-control'));
+document.querySelectorAll('select').forEach(el => el.classList.add('form-select'));
+</script>
+{% endblock %}

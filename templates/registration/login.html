@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Iniciar sesión — MotoClub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="section-card">
+      <h2 class="section-title"><i class="bi bi-person-lock"></i> Iniciar sesión</h2>
+      <form method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+          <div class="alert alert-danger">Correo o contraseña incorrectos.</div>
+        {% endif %}
+        <div class="mb-3">
+          <label class="form-label">Correo electrónico</label>
+          <input type="text" name="username" class="form-control" autofocus required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        {% if next %}
+          <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+        <button type="submit" class="btn btn-danger w-100">Entrar</button>
+      </form>
+      <hr>
+      <p class="text-center mb-0 text-muted">¿No eres miembro? <a href="{% url 'register' %}">Solicita tu inscripción</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}
