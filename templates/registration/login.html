@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Iniciar sesión — MotoClub{% endblock %}
+{% block title %}Iniciar sesión — Rocky Point Riders{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -22,7 +22,7 @@
         {% if next %}
           <input type="hidden" name="next" value="{{ next }}">
         {% endif %}
-        <button type="submit" class="btn btn-danger w-100">Entrar</button>
+        <button type="submit" class="btn btn-warning w-100">Entrar</button>
       </form>
       <hr>
       <p class="text-center mb-0 text-muted">¿No eres miembro? <a href="{% url 'register' %}">Solicita tu inscripción</a></p>

@@ -1,85 +1,66 @@
 {% extends "base.html" %}
-{% block title %}Inicio — {{ content.club_name }}{% endblock %}
+{% block title %}Bienvenidos — {{ content.club_name }}{% endblock %}
 
 {% block content %}
-<!-- Hero -->
-<div class="p-5 mb-4 rounded-4 text-white"
-     style="background: linear-gradient(135deg,{{ content.hero.background_color }},{{ content.hero.accent_color }});">
-  <div class="container-fluid py-3">
-    <h1 class="display-5 fw-bold"><i class="bi bi-motorcycle"></i> {{ content.club_name }}</h1>
-    <p class="col-md-8 fs-5">{{ content.tagline }}</p>
+<div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-dark rounded-4 shadow-lg" 
+     style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('static/img/banner.jpg'); background-size: cover; background-position: center;">
+  <div class="col-md-8 p-lg-5 mx-auto my-5">
+    <h1 class="display-3 fw-bold text-white" style="font-family: 'Metal Mania', system-ui; letter-spacing: 3px;">
+      {{ content.club_name }}
+    </h1>
+    <p class="lead fw-normal text-light mb-4">{{ content.tagline }}</p>
     {% if not user.is_authenticated %}
-      <a href="{% url 'register' %}" class="btn btn-light btn-lg me-2">Solicitar inscripción</a>
-      <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Iniciar sesión</a>
-    {% else %}
-      <a href="{% url 'profile' %}" class="btn btn-light btn-lg">Mi perfil</a>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <a href="{% url 'register' %}" class="btn btn-biker btn-lg px-5 shadow">Unirme a la hermandad</a>
+      </div>
     {% endif %}
   </div>
 </div>
 
-<!-- Quiénes somos -->
-<div class="row g-4 mb-4">
-  <div class="col-md-6">
+<div class="row g-4 py-5">
+  <div class="col-md-7">
     <div class="section-card h-100">
-      <h3 class="section-title"><i class="bi bi-people-fill"></i> {{ content.who_we_are.title }}</h3>
-      {% for p in content.who_we_are.paragraphs %}
-        <p>{{ p }}</p>
-      {% endfor %}
-    </div>
-  </div>
-  <div class="col-md-6">
-    <div class="section-card h-100">
-      <h3 class="section-title"><i class="bi bi-shield-check"></i> {{ content.mission.title }}</h3>
-      <p>{{ content.mission.body }}</p>
-      <ul class="list-unstyled mt-2">
+      <h3 class="section-title"><i class="bi bi-shield-shaded me-2"></i> {{ content.mission.title }}</h3>
+      <p class="fs-5 text-secondary">{{ content.mission.body }}</p>
+      <div class="mt-4">
         {% for item in content.mission.items %}
-          <li><i class="bi bi-check-circle-fill text-danger me-2"></i> {{ item }}</li>
+          <div class="d-flex align-items-start mb-3">
+            <i class="bi bi-gear-fill text-warning me-3 mt-1"></i>
+            <span class="fw-bold">{{ item }}</span>
+          </div>
         {% endfor %}
-      </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    <div class="section-card h-100 border-warning">
+      <h3 class="section-title text-warning"><i class="bi bi-calendar-check me-2"></i> Rodadas</h3>
+      {% if events %}
+        {% for event in events %}
+          <div class="mb-4 pb-3 border-bottom border-secondary">
+            <h5 class="text-white mb-1">{{ event.title }}</h5>
+            <div class="small text-warning mb-2">
+              <i class="bi bi-clock me-1"></i> {{ event.event_date|date:"d M, Y | H:i" }}
+            </div>
+            <p class="small text-muted mb-0"><i class="bi bi-geo-alt me-1"></i>{{ event.location }}</p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-muted italic">No hay rodadas programadas por ahora.</p>
+      {% endif %}
     </div>
   </div>
 </div>
 
-<!-- Próximos eventos -->
-{% if events %}
-<div class="section-card mb-4">
-  <h3 class="section-title"><i class="bi bi-calendar-event"></i> Próximos eventos</h3>
-  <div class="row g-3">
-    {% for event in events %}
-      <div class="col-md-4">
-        <div class="border rounded-3 p-3 h-100">
-          <h6 class="fw-bold mb-1">{{ event.title }}</h6>
-          <p class="text-danger small mb-1">
-            <i class="bi bi-calendar3 me-1"></i>{{ event.event_date|date:"d/m/Y H:i" }}
-          </p>
-          {% if event.location %}
-            <p class="text-muted small mb-1"><i class="bi bi-geo-alt me-1"></i>{{ event.location }}</p>
-          {% endif %}
-          {% if event.description %}
-            <p class="small mb-0">{{ event.description }}</p>
-          {% endif %}
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-</div>
-{% endif %}
-
-<!-- Fotos recientes -->
 {% if photos %}
-<div class="section-card">
-  <h3 class="section-title"><i class="bi bi-images"></i> Fotos recientes</h3>
-  <div class="row g-3">
+<div class="py-4">
+  <h3 class="section-title"><i class="bi bi-camera-fill me-2"></i> Galería de la Ruta</h3>
+  <div class="row g-2">
     {% for photo in photos %}
-      <div class="col-6 col-md-4 col-lg-3">
-        <div class="card border-0 shadow-sm h-100">
-          <img src="{{ photo.image.url }}" class="card-img-top" alt="{{ photo.caption }}"
-               style="height:180px;object-fit:cover;border-radius:8px 8px 0 0;">
-          {% if photo.caption %}
-            <div class="card-body p-2">
-              <small class="text-muted">{{ photo.caption }}</small>
-            </div>
-          {% endif %}
+      <div class="col-6 col-md-3">
+        <div class="overflow-hidden rounded-3 shadow-sm" style="height: 200px;">
+          <img src="{{ photo.image.url }}" class="w-100 h-100" style="object-fit: cover;" alt="{{ photo.caption }}">
         </div>
       </div>
     {% endfor %}
@@ -87,13 +68,4 @@
 </div>
 {% endif %}
 
-<!-- CTA -->
-{% if not user.is_authenticated %}
-<div class="text-center py-4">
-  <h4>¿Listo para unirte?</h4>
-  <a href="{% url 'register' %}" class="btn btn-danger btn-lg px-5">
-    <i class="bi bi-person-plus-fill me-2"></i> Solicitar inscripción
-  </a>
-</div>
-{% endif %}
 {% endblock %}

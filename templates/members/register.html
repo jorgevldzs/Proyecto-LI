@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Inscripción — MotoClub{% endblock %}
+{% block title %}Inscripción — Rocky Point Riders{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-<h2 class="mb-4"><i class="bi bi-person-plus-fill text-danger"></i> Formulario de inscripción</h2>
+<h2 class="mb-4"><i class="bi bi-person-plus-fill text-warning"></i> Formulario de inscripción</h2>
 
 {% if personal_form.errors or contact_form.errors or health_form.errors or ec1_form.errors or v1_form.errors or acceptance_form.errors %}
   <div class="alert alert-danger">
@@ -341,7 +341,7 @@
   </div>
 
   <div class="text-center mb-5">
-    <button type="submit" class="btn btn-danger btn-lg px-5">
+    <button type="submit" class="btn btn-warning btn-lg px-5">
       <i class="bi bi-send-fill me-2"></i> Enviar solicitud
     </button>
   </div>

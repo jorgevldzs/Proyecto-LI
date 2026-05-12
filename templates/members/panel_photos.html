@@ -1,68 +1,101 @@
 {% extends "base.html" %}
-{% block title %}Fotos — MotoClub{% endblock %}
+{% block title %}Gestión de Galería — Rocky Point Riders{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2><i class="bi bi-images text-danger"></i> Fotos de página principal</h2>
-  <a href="{% url 'panel_dashboard' %}" class="btn btn-outline-secondary btn-sm">
-    <i class="bi bi-arrow-left"></i> Panel
+<div class="d-flex justify-content-between align-items-center mb-5">
+  <h2 class="section-title mb-0"><i class="bi bi-images"></i> Galería de la Ruta</h2>
+  <a href="{% url 'panel_dashboard' %}" class="btn btn-outline-light btn-sm">
+    <i class="bi bi-arrow-left me-1"></i> Volver al Panel
   </a>
 </div>
 
-<!-- Agregar foto -->
-<div class="section-card col-md-6 mb-4">
-  <h5 class="section-title"><i class="bi bi-plus-circle"></i> Agregar foto</h5>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label class="form-label">Imagen</label>
-      {{ form.image }}
-      {% if form.image.errors %}<div class="text-danger small">{{ form.image.errors.0 }}</div>{% endif %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="section-card border-warning shadow-lg sticky-top" style="top: 100px; z-index: 10;">
+      <h5 class="section-title small text-warning mb-4"><i class="bi bi-plus-circle me-2"></i> Nueva Captura</h5>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-4">
+          <label class="form-label fw-bold text-uppercase small text-muted">Archivo de Imagen</label>
+          {{ form.image }}
+          {% if form.image.errors %}
+            <div class="text-warning small mt-1">{{ form.image.errors.0 }}</div>
+          {% endif %}
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-bold text-uppercase small text-muted">Descripción / Evento</label>
+          {{ form.caption }}
+        </div>
+        <button type="submit" class="btn btn-biker w-100 py-2">
+          <i class="bi bi-upload me-2"></i> Subir a la Galería
+        </button>
+      </form>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Descripción (opcional)</label>
-      {{ form.caption }}
-    </div>
-    <button type="submit" class="btn btn-danger"><i class="bi bi-upload me-1"></i> Subir</button>
-  </form>
-</div>
+  </div>
 
-<!-- Lista de fotos -->
-<div class="row g-3">
-  {% for photo in photos %}
-    <div class="col-md-3">
-      <div class="card shadow-sm {% if not photo.is_visible %}opacity-50{% endif %}">
-        <img src="{{ photo.image.url }}" class="card-img-top" style="height:160px;object-fit:cover;" alt="{{ photo.caption }}">
-        <div class="card-body p-2">
-          <p class="small mb-1">{{ photo.caption|default:"Sin descripción" }}</p>
-          <div class="d-flex gap-1">
-            <form method="post">
-              {% csrf_token %}
-              <input type="hidden" name="action" value="toggle">
-              <input type="hidden" name="photo_id" value="{{ photo.pk }}">
-              <button type="submit" class="btn btn-xs btn-sm {% if photo.is_visible %}btn-warning{% else %}btn-success{% endif %}">
-                <i class="bi bi-{% if photo.is_visible %}eye-slash{% else %}eye{% endif %}"></i>
-                {% if photo.is_visible %}Ocultar{% else %}Mostrar{% endif %}
-              </button>
-            </form>
-            <form method="post" onsubmit="return confirm('¿Eliminar esta foto?');">
-              {% csrf_token %}
-              <input type="hidden" name="action" value="delete">
-              <input type="hidden" name="photo_id" value="{{ photo.pk }}">
-              <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-            </form>
+  <div class="col-lg-8">
+    <div class="row g-3">
+      {% for photo in photos %}
+        <div class="col-md-6 col-xl-4">
+          <div class="section-card p-0 overflow-hidden h-100 {% if not photo.is_visible %}opacity-50 border-secondary{% else %}border-warning{% endif %}" 
+               style="transition: 0.3s; border-width: 1px;">
+            
+            <div class="position-relative">
+              <img src="{{ photo.image.url }}" class="w-100" style="height:200px; object-fit:cover;" alt="{{ photo.caption }}">
+              {% if not photo.is_visible %}
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(0,0,0,0.6);">
+                  <span class="badge bg-dark text-warning border border-warning px-3 py-2">OCULTA</span>
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="p-3">
+              <p class="small mb-3 text-white fw-light" style="font-family: 'Roboto Condensed', sans-serif; min-height: 40px;">
+                {{ photo.caption|default:"Sin descripción disponible" }}
+              </p>
+              
+              <div class="d-flex gap-2">
+                <form method="post" class="flex-grow-1">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="toggle">
+                  <input type="hidden" name="photo_id" value="{{ photo.pk }}">
+                  <button type="submit" class="btn btn-sm w-100 {% if photo.is_visible %}btn-outline-warning{% else %}btn-warning text-dark{% endif %}">
+                    <i class="bi bi-{% if photo.is_visible %}eye-slash{% else %}eye{% endif %} me-1"></i>
+                    {% if photo.is_visible %}Ocultar{% else %}Mostrar{% endif %}
+                  </button>
+                </form>
+                
+                <form method="post" onsubmit="return confirm('¿Eliminar esta foto de la galería?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="delete">
+                  <input type="hidden" name="photo_id" value="{{ photo.pk }}">
+                  <button type="submit" class="btn btn-sm btn-outline-warning">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      {% empty %}
+        <div class="col-12 text-center py-5 section-card border-secondary">
+          <i class="bi bi-camera text-muted fs-1 mb-3 d-block"></i>
+          <p class="text-muted mb-0">No hay fotos en la galería. Es hora de salir a rodar.</p>
+        </div>
+      {% endfor %}
     </div>
-  {% empty %}
-    <div class="col-12"><p class="text-muted">No hay fotos cargadas todavía.</p></div>
-  {% endfor %}
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.querySelectorAll('input[type=text], input[type=file]').forEach(el => el.classList.add('form-control'));
+  // Estilo para los campos de carga de archivos y texto
+  document.querySelectorAll('input[type=text], input[type=file]').forEach(el => {
+    el.classList.add('form-control');
+    el.style.backgroundColor = '#1a1a1a';
+    el.style.color = '#fff';
+    el.style.border = '1px solid #333';
+  });
 </script>
 {% endblock %}

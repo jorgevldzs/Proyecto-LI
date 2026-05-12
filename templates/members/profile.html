@@ -1,92 +1,117 @@
 {% extends "base.html" %}
-{% block title %}Mi Perfil — MotoClub{% endblock %}
+{% block title %}Mi Perfil — Rocky Point Riders{% endblock %}
 
 {% block content %}
-<div class="d-flex align-items-center gap-3 mb-4">
+<div class="d-flex align-items-center gap-4 mb-5">
   {% if member.photo %}
-    <img src="{{ member.photo.url }}" alt="Foto" class="rounded-circle" style="width:80px;height:80px;object-fit:cover;">
+    <img src="{{ member.photo.url }}" alt="Foto" class="rounded border border-2 border-warning shadow" style="width:100px;height:100px;object-fit:cover;">
   {% else %}
-    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width:80px;height:80px;">
-      <i class="bi bi-person-fill text-white fs-2"></i>
+    <div class="rounded bg-dark border border-2 border-secondary d-flex align-items-center justify-content-center shadow" style="width:100px;height:100px;">
+      <i class="bi bi-person-fill text-secondary fs-1"></i>
     </div>
   {% endif %}
   <div>
-    <h2 class="mb-0">{{ request.user.get_full_name }}</h2>
-    <span class="badge bg-{% if member.status == 'active' %}success{% elif member.status == 'pending' %}warning text-dark{% else %}danger{% endif %}">
+    <h1 class="mb-1" style="font-family: 'Metal Mania'; font-size: 2.8rem; letter-spacing: 2px;">
+      {{ request.user.get_full_name }}
+    </h1>
+    <span class="badge {% if member.status == 'active' %}bg-warning text-dark{% elif member.status == 'pending' %}border border-warning text-warning{% else %}bg-warning{% endif %} text-uppercase px-3 py-2">
       {{ member.get_status_display }}
     </span>
   </div>
 </div>
 
 {% if member.status == 'pending' %}
-  <div class="alert alert-warning">
-    <i class="bi bi-hourglass-split"></i> Tu solicitud está pendiente de aprobación.
+  <div class="alert alert-dark border-warning text-warning shadow-sm mb-4">
+    <i class="bi bi-hourglass-split me-2"></i> Tu solicitud está en proceso de revisión por la directiva.
   </div>
 {% endif %}
 
-<!-- Datos de contacto -->
-<div class="section-card">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="section-title mb-0"><i class="bi bi-house-fill"></i> Datos de contacto</h5>
-    <a href="{% url 'edit_contact' %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-pencil"></i> Editar</a>
-  </div>
-  <div class="row g-2">
-    <div class="col-md-6"><strong>Correo:</strong> {{ request.user.email }}</div>
-    <div class="col-md-6"><strong>Teléfono:</strong> {{ member.phone }}</div>
-    <div class="col-12"><strong>Dirección:</strong> {{ member.street }} #{{ member.house_number }}, {{ member.neighborhood }}</div>
-  </div>
-</div>
-
-<!-- Salud -->
-<div class="section-card">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="section-title mb-0"><i class="bi bi-heart-pulse-fill"></i> Información de salud</h5>
-    <a href="{% url 'edit_health' %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-pencil"></i> Editar</a>
-  </div>
-  {% if health %}
-    <div class="row g-2">
-      <div class="col-md-3"><strong>Grupo sanguíneo:</strong> {{ health.blood_type }}</div>
-      <div class="col-md-3"><strong>Alergias:</strong> {% if health.has_allergies %}Sí — {{ health.allergies_detail }}{% else %}No{% endif %}</div>
-      <div class="col-md-3"><strong>Padecimiento:</strong> {% if health.has_physical_condition %}Sí — {{ health.physical_condition_detail }}{% else %}No{% endif %}</div>
-      <div class="col-md-3"><strong>Tratamiento:</strong> {% if health.under_medical_treatment %}Sí — {{ health.treatment_detail }}{% else %}No{% endif %}</div>
-      <div class="col-md-3"><strong>Medicamento:</strong> {% if health.takes_medication %}Sí — {{ health.medication_detail }}{% else %}No{% endif %}</div>
-      <div class="col-md-5"><strong>Seguro médico:</strong> {% if health.has_insurance %}Sí — {{ health.insurance_detail }}{% else %}No{% endif %}</div>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="section-card h-100">
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <h5 class="section-title mb-0"><i class="bi bi-house-fill me-2"></i> Contacto</h5>
+        <a href="{% url 'edit_contact' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+          <i class="bi bi-pencil-square me-1"></i> Editar
+        </a>
+      </div>
+      <div class="row g-3">
+        <div class="col-12"><span class="text-warning fw-bold small text-uppercase d-block">Correo Electrónico</span> {{ request.user.email }}</div>
+        <div class="col-12"><span class="text-warning fw-bold small text-uppercase d-block">Teléfono</span> {{ member.phone }}</div>
+        <div class="col-12"><span class="text-warning fw-bold small text-uppercase d-block">Residencia</span> {{ member.street }} #{{ member.house_number }}, {{ member.neighborhood }}</div>
+      </div>
     </div>
-  {% else %}
-    <p class="text-muted">Sin información de salud registrada.</p>
-  {% endif %}
-</div>
-
-<!-- Contactos de emergencia -->
-<div class="section-card">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="section-title mb-0"><i class="bi bi-telephone-plus-fill"></i> Contactos de emergencia</h5>
-    <a href="{% url 'edit_emergency' %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-pencil"></i> Editar</a>
   </div>
-  {% for contact in contacts %}
-    <div class="mb-2 p-2 border rounded">
-      <span class="badge bg-secondary me-2">{{ forloop.counter }}</span>
-      <strong>{{ contact.first_name }} {{ contact.last_name }}</strong>
-      — {{ contact.relationship }}
-      — <i class="bi bi-phone"></i> {{ contact.phone }}
-    </div>
-  {% empty %}
-    <p class="text-muted">Sin contactos registrados.</p>
-  {% endfor %}
-</div>
 
-<!-- Vehículos -->
-<div class="section-card">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="section-title mb-0"><i class="bi bi-motorcycle"></i> Vehículos</h5>
-    <a href="{% url 'edit_vehicles' %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-pencil"></i> Editar</a>
-  </div>
-  {% for v in vehicles %}
-    <div class="mb-2 p-2 border rounded">
-      <i class="bi bi-motorcycle me-2"></i> {{ v.model }} — <strong>{{ v.plate }}</strong>
+  <div class="col-md-6">
+    <div class="section-card h-100">
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <h5 class="section-title mb-0"><i class="bi bi-heart-pulse-fill me-2"></i> Salud</h5>
+        <a href="{% url 'edit_health' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+          <i class="bi bi-pencil-square me-1"></i> Editar
+        </a>
+      </div>
+      {% if health %}
+        <div class="row g-3">
+          <div class="col-6">
+            <span class="text-warning fw-bold small text-uppercase d-block">Tipo de Sangre</span>
+            <span class="fs-4 fw-bold text-white">{{ health.blood_type }}</span>
+          </div>
+          <div class="col-6">
+            <span class="text-warning fw-bold small text-uppercase d-block">Alergias</span>
+            {{ health.has_allergies|yesno:"Sí,No" }}{% if health.has_allergies %}: {{ health.allergies_detail }}{% endif %}
+          </div>
+          <div class="col-12 border-top border-secondary pt-2">
+            <span class="text-warning fw-bold small text-uppercase d-block">Seguro Médico</span>
+            {% if health.has_insurance %}{{ health.insurance_detail }}{% else %}No registrado{% endif %}
+          </div>
+        </div>
+      {% else %}
+        <p class="text-muted italic">Sin información de salud registrada.</p>
+      {% endif %}
     </div>
-  {% empty %}
-    <p class="text-muted">Sin vehículos registrados.</p>
-  {% endfor %}
+  </div>
+
+  <div class="col-md-6">
+    <div class="section-card h-100 border-secondary">
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <h5 class="section-title mb-0"><i class="bi bi-telephone-plus-fill me-2"></i> Emergencias</h5>
+        <a href="{% url 'edit_emergency' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+          <i class="bi bi-pencil-square me-1"></i> Editar
+        </a>
+      </div>
+      {% for contact in contacts %}
+        <div class="mb-3 p-3 bg-dark rounded border-start border-3 border-warning">
+          <div class="fw-bold text-white fs-5">{{ contact.first_name }} {{ contact.last_name }}</div>
+          <div class="text-warning small text-uppercase">{{ contact.relationship }}</div>
+          <div class="mt-2"><i class="bi bi-phone me-2 text-muted"></i>{{ contact.phone }}</div>
+        </div>
+      {% empty %}
+        <p class="text-muted">Sin contactos de emergencia.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="section-card h-100 border-secondary">
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <h5 class="section-title mb-0"><i class="bi bi-motorcycle me-2"></i> Mi Garaje</h5>
+        <a href="{% url 'edit_vehicles' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+          <i class="bi bi-pencil-square me-1"></i> Editar
+        </a>
+      </div>
+      {% for v in vehicles %}
+        <div class="mb-3 p-3 bg-dark rounded border-start border-3 border-secondary d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-bold text-white fs-5 text-uppercase">{{ v.model }}</div>
+            <div class="text-muted small">PLACA: {{ v.plate }}</div>
+          </div>
+          <i class="bi bi-gear-wide-connected text-secondary fs-3"></i>
+        </div>
+      {% empty %}
+        <p class="text-muted">No tienes vehículos registrados.</p>
+      {% endfor %}
+    </div>
+  </div>
 </div>
 {% endblock %}

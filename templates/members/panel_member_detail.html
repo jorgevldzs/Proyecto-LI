@@ -1,110 +1,63 @@
 {% extends "base.html" %}
-{% block title %}Detalle miembro — MotoClub{% endblock %}
+{% block title %}Admin: Detalle — Rocky Point Riders{% endblock %}
 
 {% block content %}
 <a href="{% if from_all %}{% url 'panel_all_members' %}{% else %}{% url 'panel_requests' %}{% endif %}"
-   class="btn btn-outline-secondary btn-sm mb-3">
-  <i class="bi bi-arrow-left"></i> {% if from_all %}Volver a todos los miembros{% else %}Volver a solicitudes{% endif %}
+   class="btn btn-outline-light btn-sm mb-4">
+  <i class="bi bi-arrow-left"></i> Volver a la lista
 </a>
-<div class="d-flex align-items-center gap-3 mb-4">
-  {% if member.photo %}
-    <img src="{{ member.photo.url }}" alt="" class="rounded-circle" style="width:80px;height:80px;object-fit:cover;">
-  {% else %}
-    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width:80px;height:80px;">
-      <i class="bi bi-person-fill text-white fs-2"></i>
-    </div>
-  {% endif %}
-  <div>
-    <h2 class="mb-0">{{ member.user.get_full_name }}</h2>
-    <span class="badge
-      {% if member.status == 'active' %}bg-success
-      {% elif member.status == 'pending' %}bg-warning text-dark
-      {% else %}bg-danger{% endif %}">
-      {{ member.get_status_display }}
-    </span>
-    {% if member.status == 'active' and not member.user.is_active %}
-      <span class="badge bg-secondary ms-1">Cuenta suspendida</span>
+
+<div class="section-card border-warning mb-4">
+  <div class="d-flex align-items-center gap-4">
+    {% if member.photo %}
+      <img src="{{ member.photo.url }}" alt="" class="rounded border border-2 border-warning" style="width:100px;height:100px;object-fit:cover;">
     {% endif %}
-  </div>
-</div>
-
-<div class="row g-3">
-  <div class="col-md-6">
-    <div class="section-card">
-      <h5 class="section-title">Datos personales</h5>
-      <p><strong>Correo:</strong> {{ member.user.email }}</p>
-      <p><strong>Sexo:</strong> {{ member.get_sex_display }}</p>
-      <p><strong>Nacimiento:</strong> {{ member.birth_date|date:"d/m/Y" }}</p>
-    </div>
-  </div>
-  <div class="col-md-6">
-    <div class="section-card">
-      <h5 class="section-title">Contacto</h5>
-      <p><strong>Teléfono:</strong> {{ member.phone }}</p>
-      <p><strong>Dirección:</strong> {{ member.street }} #{{ member.house_number }}, {{ member.neighborhood }}</p>
-    </div>
-  </div>
-
-  <div class="col-12">
-    <div class="section-card">
-      <h5 class="section-title">Salud</h5>
-      {% if health %}
-        <p><strong>Grupo sanguíneo:</strong> {{ health.blood_type }}</p>
-        <p><strong>Alergias:</strong> {% if health.has_allergies %}Sí — {{ health.allergies_detail }}{% else %}No{% endif %}</p>
-        <p><strong>Padecimiento físico:</strong> {% if health.has_physical_condition %}Sí — {{ health.physical_condition_detail }}{% else %}No{% endif %}</p>
-        <p><strong>Tratamiento médico:</strong> {% if health.under_medical_treatment %}Sí — {{ health.treatment_detail }}{% else %}No{% endif %}</p>
-        <p><strong>Medicamento:</strong> {% if health.takes_medication %}Sí — {{ health.medication_detail }}{% else %}No{% endif %}</p>
-        <p><strong>Seguro médico:</strong> {% if health.has_insurance %}Sí — {{ health.insurance_detail }}{% else %}No{% endif %}</p>
-      {% else %}
-        <p class="text-muted">Sin información.</p>
-      {% endif %}
-    </div>
-  </div>
-
-  <div class="col-md-6">
-    <div class="section-card">
-      <h5 class="section-title">Contactos de emergencia</h5>
-      {% for c in contacts %}
-        <p><strong>{{ c.first_name }} {{ c.last_name }}</strong> — {{ c.relationship }} — {{ c.phone }}</p>
-      {% empty %}<p class="text-muted">Ninguno.</p>{% endfor %}
-    </div>
-  </div>
-
-  <div class="col-md-6">
-    <div class="section-card">
-      <h5 class="section-title">Vehículos</h5>
-      {% for v in vehicles %}
-        <p><i class="bi bi-motorcycle me-2"></i> {{ v.model }} — {{ v.plate }}</p>
-      {% empty %}<p class="text-muted">Ninguno.</p>{% endfor %}
+    <div>
+      <h2 class="text-white mb-1" style="font-family: 'Metal Mania';">{{ member.user.get_full_name }}</h2>
+      <span class="badge {% if member.status == 'active' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+        ESTADO: {{ member.get_status_display }}
+      </span>
     </div>
   </div>
 </div>
 
-<!-- Actions — depend on member status -->
-<div class="d-flex gap-2 mt-3 flex-wrap">
+<div class="d-flex gap-2 mb-4">
   {% if member.status == 'pending' %}
     <form method="post" action="{% url 'panel_approve' member.pk %}">
       {% csrf_token %}
-      <button type="submit" class="btn btn-success"><i class="bi bi-check-lg me-1"></i> Aprobar</button>
+      <button type="submit" class="btn btn-biker px-4">Aprobar Miembro</button>
     </form>
-    <form method="post" action="{% url 'panel_reject' member.pk %}" onsubmit="return confirm('¿Rechazar?');">
+    <form method="post" action="{% url 'panel_reject' member.pk %}">
       {% csrf_token %}
-      <button type="submit" class="btn btn-danger"><i class="bi bi-x-lg me-1"></i> Rechazar</button>
+      <button type="submit" class="btn btn-outline-danger">Rechazar</button>
     </form>
   {% elif member.status == 'active' %}
-    {% if member.user.is_active %}
-      <form method="post" action="{% url 'panel_disable' member.pk %}" onsubmit="return confirm('¿Desactivar la cuenta de este miembro?');">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-warning"><i class="bi bi-person-slash me-1"></i> Suspender cuenta</button>
-      </form>
-    {% else %}
-      <form method="post" action="{% url 'panel_enable' member.pk %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-success"><i class="bi bi-person-check me-1"></i> Reactivar cuenta</button>
-      </form>
-    {% endif %}
-  {% else %}
-    <span class="text-muted small">Solicitud rechazada. Sin acciones disponibles.</span>
+    <form method="post" action="{% url 'panel_disable' member.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-warning">Suspender Cuenta</button>
+    </form>
   {% endif %}
+</div>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="section-card h-100">
+      <h5 class="section-title small text-warning">Datos de Contacto</h5>
+      <p class="mb-1"><i class="bi bi-envelope me-2"></i> {{ member.user.email }}</p>
+      <p class="mb-1"><i class="bi bi-telephone me-2"></i> {{ member.phone }}</p>
+      <p class="mb-0 text-muted"><i class="bi bi-geo-alt me-2"></i> {{ member.neighborhood }}, {{ member.street }} #{{ member.house_number }}</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="section-card h-100">
+      <h5 class="section-title small text-warning">Vehículos</h5>
+      {% for v in vehicles %}
+        <div class="d-flex justify-content-between border-bottom border-secondary pb-1 mb-2">
+          <span><i class="bi bi-motorcycle me-2"></i>{{ v.model }}</span>
+          <span class="fw-bold">{{ v.plate }}</span>
+        </div>
+      {% empty %}<p class="text-muted">Sin motos registradas.</p>{% endfor %}
+    </div>
+  </div>
 </div>
 {% endblock %}

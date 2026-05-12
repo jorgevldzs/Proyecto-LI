@@ -1,55 +1,65 @@
 {% extends "base.html" %}
-{% block title %}Info de seguridad — MotoClub{% endblock %}
+{% block title %}Info de Seguridad — Rocky Point Riders{% endblock %}
 
 {% block content %}
-<a href="{% url 'member_list' %}" class="btn btn-outline-secondary btn-sm mb-3">
-  <i class="bi bi-arrow-left"></i> Volver
-</a>
+<div class="mb-4 d-flex justify-content-between align-items-center">
+  <a href="{% url 'member_list' %}" class="btn btn-outline-warning btn-sm">
+    <i class="bi bi-arrow-left"></i> Volver al grupo
+  </a>
+</div>
 
-<div class="d-flex align-items-center gap-3 mb-4">
-  {% if member.photo %}
-    <img src="{{ member.photo.url }}" alt="" class="rounded-circle" style="width:70px;height:70px;object-fit:cover;">
-  {% else %}
-    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width:70px;height:70px;">
-      <i class="bi bi-person-fill text-white fs-2"></i>
+<div class="section-card border-warning mb-4">
+  <div class="d-flex align-items-center gap-4 mb-2">
+    {% if member.photo %}
+      <img src="{{ member.photo.url }}" alt="" class="rounded-3 border border-2 border-warning" style="width:120px;height:120px;object-fit:cover;">
+    {% endif %}
+    <div>
+      <h1 class="text-white mb-0" style="font-family: 'Metal Mania'; font-size: 3rem;">{{ member.user.get_full_name }}</h1>
+      <span class="badge bg-warning text-dark px-3 py-2 mt-2">MIEMBRO ACTIVO</span>
     </div>
-  {% endif %}
-  <h2 class="mb-0">{{ member.user.get_full_name }}</h2>
+  </div>
 </div>
 
-<div class="alert alert-warning py-2">
-  <i class="bi bi-shield-fill-exclamation"></i> Información de seguridad — visible sólo para miembros activos.
-</div>
-
-<!-- Salud -->
 <div class="section-card">
-  <h5 class="section-title"><i class="bi bi-heart-pulse-fill"></i> Salud</h5>
+  <h3 class="section-title text-warning"><i class="bi bi-heart-pulse-fill"></i> Información Médica</h3>
   {% if health %}
-    <div class="row g-2">
-      <div class="col-md-3"><strong>Grupo sanguíneo:</strong> <span class="badge bg-danger fs-6">{{ health.blood_type }}</span></div>
-      <div class="col-md-4"><strong>Alergias:</strong> {% if health.has_allergies %}Sí — {{ health.allergies_detail }}{% else %}No{% endif %}</div>
-      <div class="col-md-5"><strong>Padecimiento físico:</strong> {% if health.has_physical_condition %}Sí — {{ health.physical_condition_detail }}{% else %}No{% endif %}</div>
-      <div class="col-md-4"><strong>Tratamiento médico:</strong> {% if health.under_medical_treatment %}Sí — {{ health.treatment_detail }}{% else %}No{% endif %}</div>
-      <div class="col-md-4"><strong>Medicamento:</strong> {% if health.takes_medication %}Sí — {{ health.medication_detail }}{% else %}No{% endif %}</div>
-      <div class="col-md-4"><strong>Seguro médico:</strong> {% if health.has_insurance %}Sí — {{ health.insurance_detail }}{% else %}No{% endif %}</div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="p-3 bg-black rounded border border-secondary">
+          <label class="small text-uppercase text-muted d-block">Tipo de Sangre</label>
+          <span class="display-5 fw-bold text-warning">{{ health.blood_type }}</span>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="row g-3">
+          <div class="col-6"><strong>Alergias:</strong> <p class="{% if health.has_allergies %}text-warning fw-bold{% else %}text-muted{% endif %}">{% if health.has_allergies %}{{ health.allergies_detail }}{% else %}Ninguna{% endif %}</p></div>
+          <div class="col-6"><strong>Seguro:</strong> <p class="text-white">{% if health.has_insurance %}{{ health.insurance_detail }}{% else %}No registrado{% endif %}</p></div>
+          <div class="col-12 border-top border-secondary pt-2">
+            <strong>Tratamientos/Medicamentos:</strong>
+            <p class="mb-0 text-white">{% if health.takes_medication %}{{ health.medication_detail }}{% else %}Sin medicación{% endif %}</p>
+          </div>
+        </div>
+      </div>
     </div>
-  {% else %}
-    <p class="text-muted">Sin información de salud registrada.</p>
   {% endif %}
 </div>
 
-<!-- Contactos de emergencia -->
-<div class="section-card">
-  <h5 class="section-title"><i class="bi bi-telephone-plus-fill"></i> Contactos de emergencia</h5>
-  {% for c in contacts %}
-    <div class="mb-2 p-2 border rounded">
-      <strong>{{ c.first_name }} {{ c.last_name }}</strong>
-      — {{ c.relationship }}
-      — <i class="bi bi-phone"></i> {{ c.phone }}
-      {% if c.is_primary %}<span class="badge bg-secondary ms-1">Principal</span>{% endif %}
-    </div>
-  {% empty %}
-    <p class="text-muted">Sin contactos registrados.</p>
-  {% endfor %}
+<div class="section-card border-secondary">
+  <h3 class="section-title"><i class="bi bi-telephone-plus-fill"></i> Contactos de Emergencia</h3>
+  <div class="row g-3">
+    {% for c in contacts %}
+      <div class="col-md-6">
+        <div class="p-3 bg-dark rounded d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-1 text-white">{{ c.first_name }} {{ c.last_name }}</h5>
+            <span class="text-warning small">{{ c.relationship }}</span>
+          </div>
+          <a href="tel:{{ c.phone }}" class="btn btn-biker px-3">
+            <i class="bi bi-telephone-fill"></i> LLAMAR
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}
