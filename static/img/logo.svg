@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <!-- Rear wheel -->
+  <circle cx="9" cy="28" r="7" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+  <circle cx="9" cy="28" r="2" fill="#ffffff"/>
+  <!-- Front wheel -->
+  <circle cx="31" cy="28" r="7" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+  <circle cx="31" cy="28" r="2" fill="#ffffff"/>
+  <!-- Body -->
+  <path d="M9 28 L14 16 L22 14 L28 21 L31 28" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Tank / seat -->
+  <path d="M16 14 L22 14 L26 19 L18 20 Z" fill="#dc3545"/>
+  <!-- Handlebar -->
+  <path d="M27 19 L30 15 L33 15" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <!-- Rider head -->
+  <circle cx="21" cy="11" r="3" fill="#dc3545"/>
+</svg>

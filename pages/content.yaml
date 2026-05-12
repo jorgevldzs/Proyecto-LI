@@ -1,0 +1,21 @@
+club_name: MotoClub
+tagline: Hermandad, pasión y libertad sobre dos ruedas. Únete a nuestra comunidad de motociclistas.
+
+hero:
+  background_color: "#1a1a2e"
+  accent_color: "#dc3545"
+
+who_we_are:
+  title: "¿Quiénes somos?"
+  paragraphs:
+    - "Somos un club de motociclismo fundado con el propósito de reunir a personas apasionadas por las motocicletas, la carretera y la aventura."
+    - "Promovemos una cultura de manejo responsable, el respeto entre motociclistas y la solidaridad entre todos nuestros miembros."
+
+mission:
+  title: "Nuestra misión"
+  body: "Crear una comunidad unida y segura donde cada motociclista encuentre camaradería, apoyo y experiencias memorables en cada rodada."
+  items:
+    - "Rodadas organizadas mensualmente"
+    - "Información de emergencia compartida"
+    - "Comunidad de confianza"
+    - "Eventos y convivencias"

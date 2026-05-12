@@ -7,9 +7,9 @@ from django.db import transaction
 from .models import Member, HealthInfo, EmergencyContact, Vehicle
 from .forms import (
     PersonalDataForm, ContactForm, HealthForm, EmergencyContactForm, VehicleForm,
-    AcceptanceForm, EditContactForm, EditEmergencyContactForm, AddPhotoForm,
+    AcceptanceForm, EditContactForm, EditEmergencyContactForm, AddPhotoForm, EventForm,
 )
-from pages.models import MainPagePhoto
+from pages.models import Event, MainPagePhoto
 
 
 def _is_staff(user):
@@ -149,6 +149,8 @@ def register_success(request):
 
 @login_required
 def profile(request):
+    if request.user.is_staff and not Member.objects.filter(user=request.user).exists():
+        return redirect("panel_dashboard")
     member = get_object_or_404(Member, user=request.user)
     health = getattr(member, "health_info", None)
     contacts = member.emergency_contacts.all()
@@ -306,10 +308,12 @@ def panel_dashboard(request):
     pending_count = Member.objects.filter(status="pending").count()
     active_count = Member.objects.filter(status="active").count()
     photos_count = MainPagePhoto.objects.count()
+    events_count = Event.objects.count()
     return render(request, "members/panel_dashboard.html", {
         "pending_count": pending_count,
         "active_count": active_count,
         "photos_count": photos_count,
+        "events_count": events_count,
     })
 
 
@@ -325,11 +329,13 @@ def panel_member_detail(request, pk):
     health = getattr(member, "health_info", None)
     contacts = member.emergency_contacts.all()
     vehicles = member.vehicles.all()
+    from_all = request.GET.get("from") == "all"
     return render(request, "members/panel_member_detail.html", {
         "member": member,
         "health": health,
         "contacts": contacts,
         "vehicles": vehicles,
+        "from_all": from_all,
     })
 
 
@@ -359,6 +365,53 @@ def panel_reject(request, pk):
 def panel_all_members(request):
     members = Member.objects.select_related("user").all()
     return render(request, "members/panel_all_members.html", {"members": members})
+
+
+@staff_required
+def panel_disable(request, pk):
+    if request.method == "POST":
+        member = get_object_or_404(Member, pk=pk)
+        member.user.is_active = False
+        member.user.save()
+        messages.success(request, f"Cuenta de {member.user.get_full_name()} desactivada.")
+    return redirect("panel_member_detail", pk=pk)
+
+
+@staff_required
+def panel_enable(request, pk):
+    if request.method == "POST":
+        member = get_object_or_404(Member, pk=pk)
+        member.user.is_active = True
+        member.user.save()
+        messages.success(request, f"Cuenta de {member.user.get_full_name()} reactivada.")
+    return redirect("panel_member_detail", pk=pk)
+
+
+@staff_required
+def panel_events(request):
+    events = Event.objects.all()
+    form = EventForm()
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "delete":
+            eid = request.POST.get("event_id")
+            Event.objects.filter(pk=eid).delete()
+            messages.success(request, "Evento eliminado.")
+            return redirect("panel_events")
+        if action == "toggle":
+            eid = request.POST.get("event_id")
+            event = get_object_or_404(Event, pk=eid)
+            event.is_visible = not event.is_visible
+            event.save()
+            return redirect("panel_events")
+        form = EventForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Evento creado.")
+            return redirect("panel_events")
+
+    return render(request, "members/panel_events.html", {"events": events, "form": form})
 
 
 @staff_required

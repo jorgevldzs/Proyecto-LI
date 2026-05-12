@@ -16,6 +16,9 @@ urlpatterns = [
     path("panel/solicitudes/<int:pk>/", views.panel_member_detail, name="panel_member_detail"),
     path("panel/solicitudes/<int:pk>/aprobar/", views.panel_approve, name="panel_approve"),
     path("panel/solicitudes/<int:pk>/rechazar/", views.panel_reject, name="panel_reject"),
+    path("panel/solicitudes/<int:pk>/desactivar/", views.panel_disable, name="panel_disable"),
+    path("panel/solicitudes/<int:pk>/reactivar/", views.panel_enable, name="panel_enable"),
     path("panel/miembros/", views.panel_all_members, name="panel_all_members"),
+    path("panel/eventos/", views.panel_events, name="panel_events"),
     path("panel/fotos/", views.panel_photos, name="panel_photos"),
 ]

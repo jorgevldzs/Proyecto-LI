@@ -1,12 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Inicio — MotoClub{% endblock %}
+{% block title %}Inicio — {{ content.club_name }}{% endblock %}
 
 {% block content %}
 <!-- Hero -->
-<div class="p-5 mb-4 rounded-4 text-white" style="background: linear-gradient(135deg,#1a1a2e,#dc3545);">
+<div class="p-5 mb-4 rounded-4 text-white"
+     style="background: linear-gradient(135deg,{{ content.hero.background_color }},{{ content.hero.accent_color }});">
   <div class="container-fluid py-3">
-    <h1 class="display-5 fw-bold"><i class="bi bi-motorcycle"></i> MotoClub</h1>
-    <p class="col-md-8 fs-5">Hermandad, pasión y libertad sobre dos ruedas. Únete a nuestra comunidad de motociclistas.</p>
+    <h1 class="display-5 fw-bold"><i class="bi bi-motorcycle"></i> {{ content.club_name }}</h1>
+    <p class="col-md-8 fs-5">{{ content.tagline }}</p>
     {% if not user.is_authenticated %}
       <a href="{% url 'register' %}" class="btn btn-light btn-lg me-2">Solicitar inscripción</a>
       <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Iniciar sesión</a>
@@ -20,24 +21,49 @@
 <div class="row g-4 mb-4">
   <div class="col-md-6">
     <div class="section-card h-100">
-      <h3 class="section-title"><i class="bi bi-people-fill"></i> ¿Quiénes somos?</h3>
-      <p>Somos un club de motociclismo fundado con el propósito de reunir a personas apasionadas por las motocicletas, la carretera y la aventura.</p>
-      <p>Promovemos una cultura de manejo responsable, el respeto entre motociclistas y la solidaridad entre todos nuestros miembros.</p>
+      <h3 class="section-title"><i class="bi bi-people-fill"></i> {{ content.who_we_are.title }}</h3>
+      {% for p in content.who_we_are.paragraphs %}
+        <p>{{ p }}</p>
+      {% endfor %}
     </div>
   </div>
   <div class="col-md-6">
     <div class="section-card h-100">
-      <h3 class="section-title"><i class="bi bi-shield-check"></i> Nuestra misión</h3>
-      <p>Crear una comunidad unida y segura donde cada motociclista encuentre camaradería, apoyo y experiencias memorables en cada rodada.</p>
+      <h3 class="section-title"><i class="bi bi-shield-check"></i> {{ content.mission.title }}</h3>
+      <p>{{ content.mission.body }}</p>
       <ul class="list-unstyled mt-2">
-        <li><i class="bi bi-check-circle-fill text-danger me-2"></i> Rodadas organizadas mensualmente</li>
-        <li><i class="bi bi-check-circle-fill text-danger me-2"></i> Información de emergencia compartida</li>
-        <li><i class="bi bi-check-circle-fill text-danger me-2"></i> Comunidad de confianza</li>
-        <li><i class="bi bi-check-circle-fill text-danger me-2"></i> Eventos y convivencias</li>
+        {% for item in content.mission.items %}
+          <li><i class="bi bi-check-circle-fill text-danger me-2"></i> {{ item }}</li>
+        {% endfor %}
       </ul>
     </div>
   </div>
 </div>
+
+<!-- Próximos eventos -->
+{% if events %}
+<div class="section-card mb-4">
+  <h3 class="section-title"><i class="bi bi-calendar-event"></i> Próximos eventos</h3>
+  <div class="row g-3">
+    {% for event in events %}
+      <div class="col-md-4">
+        <div class="border rounded-3 p-3 h-100">
+          <h6 class="fw-bold mb-1">{{ event.title }}</h6>
+          <p class="text-danger small mb-1">
+            <i class="bi bi-calendar3 me-1"></i>{{ event.event_date|date:"d/m/Y H:i" }}
+          </p>
+          {% if event.location %}
+            <p class="text-muted small mb-1"><i class="bi bi-geo-alt me-1"></i>{{ event.location }}</p>
+          {% endif %}
+          {% if event.description %}
+            <p class="small mb-0">{{ event.description }}</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 
 <!-- Fotos recientes -->
 {% if photos %}

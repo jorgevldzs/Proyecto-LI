@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -22,8 +23,9 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'home' %}">
-      <i class="bi bi-motorcycle"></i> MotoClub
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
+      <img src="{% static 'img/logo.svg' %}" alt="Logo" height="32" width="32">
+      MotoClub
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
       <span class="navbar-toggler-icon"></span>
@@ -43,6 +45,7 @@
                 <li><a class="dropdown-item" href="{% url 'panel_dashboard' %}">Dashboard</a></li>
                 <li><a class="dropdown-item" href="{% url 'panel_requests' %}">Solicitudes</a></li>
                 <li><a class="dropdown-item" href="{% url 'panel_all_members' %}">Todos los miembros</a></li>
+                <li><a class="dropdown-item" href="{% url 'panel_events' %}">Eventos</a></li>
                 <li><a class="dropdown-item" href="{% url 'panel_photos' %}">Fotos</a></li>
               </ul>
             </li>

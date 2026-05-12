@@ -2,8 +2,9 @@
 {% block title %}Detalle miembro — MotoClub{% endblock %}
 
 {% block content %}
-<a href="{% url 'panel_requests' %}" class="btn btn-outline-secondary btn-sm mb-3">
-  <i class="bi bi-arrow-left"></i> Volver a solicitudes
+<a href="{% if from_all %}{% url 'panel_all_members' %}{% else %}{% url 'panel_requests' %}{% endif %}"
+   class="btn btn-outline-secondary btn-sm mb-3">
+  <i class="bi bi-arrow-left"></i> {% if from_all %}Volver a todos los miembros{% else %}Volver a solicitudes{% endif %}
 </a>
 <div class="d-flex align-items-center gap-3 mb-4">
   {% if member.photo %}
@@ -15,7 +16,15 @@
   {% endif %}
   <div>
     <h2 class="mb-0">{{ member.user.get_full_name }}</h2>
-    <span class="badge bg-warning text-dark">{{ member.get_status_display }}</span>
+    <span class="badge
+      {% if member.status == 'active' %}bg-success
+      {% elif member.status == 'pending' %}bg-warning text-dark
+      {% else %}bg-danger{% endif %}">
+      {{ member.get_status_display }}
+    </span>
+    {% if member.status == 'active' and not member.user.is_active %}
+      <span class="badge bg-secondary ms-1">Cuenta suspendida</span>
+    {% endif %}
   </div>
 </div>
 
@@ -71,14 +80,31 @@
   </div>
 </div>
 
-<div class="d-flex gap-2 mt-3">
-  <form method="post" action="{% url 'panel_approve' member.pk %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-success"><i class="bi bi-check-lg me-1"></i> Aprobar</button>
-  </form>
-  <form method="post" action="{% url 'panel_reject' member.pk %}" onsubmit="return confirm('¿Rechazar?');">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger"><i class="bi bi-x-lg me-1"></i> Rechazar</button>
-  </form>
+<!-- Actions — depend on member status -->
+<div class="d-flex gap-2 mt-3 flex-wrap">
+  {% if member.status == 'pending' %}
+    <form method="post" action="{% url 'panel_approve' member.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success"><i class="bi bi-check-lg me-1"></i> Aprobar</button>
+    </form>
+    <form method="post" action="{% url 'panel_reject' member.pk %}" onsubmit="return confirm('¿Rechazar?');">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger"><i class="bi bi-x-lg me-1"></i> Rechazar</button>
+    </form>
+  {% elif member.status == 'active' %}
+    {% if member.user.is_active %}
+      <form method="post" action="{% url 'panel_disable' member.pk %}" onsubmit="return confirm('¿Desactivar la cuenta de este miembro?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning"><i class="bi bi-person-slash me-1"></i> Suspender cuenta</button>
+      </form>
+    {% else %}
+      <form method="post" action="{% url 'panel_enable' member.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success"><i class="bi bi-person-check me-1"></i> Reactivar cuenta</button>
+      </form>
+    {% endif %}
+  {% else %}
+    <span class="text-muted small">Solicitud rechazada. Sin acciones disponibles.</span>
+  {% endif %}
 </div>
 {% endblock %}

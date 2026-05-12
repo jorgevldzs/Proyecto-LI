@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+
+from pages.models import Event
 from .models import Member, HealthInfo, EmergencyContact, Vehicle, SEX_CHOICES, BLOOD_TYPE_CHOICES
 
 
@@ -151,3 +153,25 @@ class EditEmergencyContactForm(forms.ModelForm):
 class AddPhotoForm(forms.Form):
     image = forms.ImageField(label="Imagen")
     caption = forms.CharField(max_length=200, required=False, label="Descripción (opcional)")
+
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ["title", "description", "event_date", "location", "is_visible"]
+        labels = {
+            "title": "Título",
+            "description": "Descripción",
+            "event_date": "Fecha y hora",
+            "location": "Lugar",
+            "is_visible": "Visible en el sitio",
+        }
+        widgets = {
+            "event_date": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
+            "description": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.event_date:
+            self.initial["event_date"] = self.instance.event_date.strftime("%Y-%m-%dT%H:%M")
