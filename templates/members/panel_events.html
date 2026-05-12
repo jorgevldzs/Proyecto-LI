@@ -1,32 +1,32 @@
 {% extends "base.html" %}
-{% block title %}Eventos — MotoClub{% endblock %}
+{% block title %}Eventos — Rocky Point Riders{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2><i class="bi bi-calendar-event text-warning"></i> Eventos</h2>
-  <a href="{% url 'panel_dashboard' %}" class="btn btn-outline-secondary btn-sm">
-    <i class="bi bi-arrow-left"></i> Panel
+<div class="d-flex justify-content-between align-items-center mb-5">
+  <h2 class="section-title mb-0"><i class="bi bi-calendar-event me-2"></i> Eventos</h2>
+  <a href="{% url 'panel_dashboard' %}" class="btn btn-outline-warning btn-sm">
+    <i class="bi bi-arrow-left me-1"></i> Panel
   </a>
 </div>
 
 <div class="row g-4">
   <!-- Create form -->
   <div class="col-lg-4">
-    <div class="section-card">
-      <h5 class="section-title">Nuevo evento</h5>
+    <div class="section-card border-warning">
+      <h5 class="section-title small text-warning mb-4">Nuevo Evento</h5>
       <form method="post">
         {% csrf_token %}
         {% for field in form %}
           <div class="mb-3">
-            <label class="form-label fw-semibold">{{ field.label }}</label>
+            <label class="form-label fw-bold text-uppercase small text-muted">{{ field.label }}</label>
             {{ field }}
             {% if field.errors %}
-              <div class="text-warning small">{{ field.errors.0 }}</div>
+              <div class="text-warning small mt-1">{{ field.errors.0 }}</div>
             {% endif %}
           </div>
         {% endfor %}
-        <button type="submit" class="btn btn-warning w-100">
-          <i class="bi bi-plus-lg me-1"></i> Crear evento
+        <button type="submit" class="btn btn-biker w-100">
+          <i class="bi bi-plus-lg me-1"></i> Crear Evento
         </button>
       </form>
     </div>
@@ -34,42 +34,44 @@
 
   <!-- Event list -->
   <div class="col-lg-8">
-    <div class="section-card">
-      <h5 class="section-title">Eventos programados</h5>
+    <div class="section-card p-0 overflow-hidden">
+      <div class="px-4 py-3" style="border-bottom: 2px solid var(--biker-gold);">
+        <h5 class="section-title mb-0 small text-warning">Eventos Programados</h5>
+      </div>
       {% if events %}
         <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead class="table-dark">
-              <tr>
-                <th>Título</th>
+          <table class="table table-dark table-hover align-middle mb-0">
+            <thead style="background-color: #000; border-bottom: 2px solid var(--biker-gold);">
+              <tr class="text-warning text-uppercase small">
+                <th class="ps-4">Título</th>
                 <th>Fecha</th>
                 <th>Lugar</th>
                 <th>Visible</th>
-                <th></th>
+                <th class="pe-4"></th>
               </tr>
             </thead>
             <tbody>
               {% for e in events %}
-                <tr>
-                  <td class="fw-semibold">{{ e.title }}</td>
-                  <td><small>{{ e.event_date|date:"d/m/Y H:i" }}</small></td>
+                <tr style="border-bottom: 1px solid #222;">
+                  <td class="ps-4 fw-bold text-white">{{ e.title }}</td>
+                  <td><small class="text-muted">{{ e.event_date|date:"d/m/Y H:i" }}</small></td>
                   <td><small class="text-muted">{{ e.location|default:"—" }}</small></td>
                   <td>
                     <form method="post" class="d-inline">
                       {% csrf_token %}
                       <input type="hidden" name="action" value="toggle">
                       <input type="hidden" name="event_id" value="{{ e.pk }}">
-                      <button type="submit" class="btn btn-sm {% if e.is_visible %}btn-success{% else %}btn-secondary{% endif %}">
-                        {% if e.is_visible %}<i class="bi bi-eye"></i>{% else %}<i class="bi bi-eye-slash"></i>{% endif %}
+                      <button type="submit" class="btn btn-sm {% if e.is_visible %}btn-outline-warning{% else %}btn-outline-secondary{% endif %}">
+                        <i class="bi bi-{% if e.is_visible %}eye{% else %}eye-slash{% endif %}"></i>
                       </button>
                     </form>
                   </td>
-                  <td>
+                  <td class="pe-4">
                     <form method="post" onsubmit="return confirm('¿Eliminar este evento?');">
                       {% csrf_token %}
                       <input type="hidden" name="action" value="delete">
                       <input type="hidden" name="event_id" value="{{ e.pk }}">
-                      <button type="submit" class="btn btn-sm btn-outline-warning">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
                         <i class="bi bi-trash"></i>
                       </button>
                     </form>
@@ -80,7 +82,7 @@
           </table>
         </div>
       {% else %}
-        <p class="text-muted text-center py-3">Sin eventos programados.</p>
+        <p class="text-muted text-center py-4 px-4">Sin eventos programados.</p>
       {% endif %}
     </div>
   </div>
@@ -89,8 +91,7 @@
 
 {% block extra_js %}
 <script>
-  // Apply Bootstrap form-control class to all form inputs
-  document.querySelectorAll('#id_title,#id_description,#id_event_date,#id_location').forEach(el => {
+  document.querySelectorAll('#id_title, #id_description, #id_event_date, #id_location').forEach(el => {
     el.classList.add(el.tagName === 'SELECT' ? 'form-select' : 'form-control');
   });
   document.querySelector('#id_is_visible')?.classList.add('form-check-input');

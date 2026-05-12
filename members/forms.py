@@ -121,6 +121,13 @@ class AcceptanceForm(forms.Form):
     )
 
 
+class EditPhotoForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields = ["photo"]
+        labels = {"photo": "Nueva foto de perfil"}
+
+
 class EditContactForm(forms.ModelForm):
     email = forms.EmailField(label="Correo electrónico", required=False)
     first_name = forms.CharField(max_length=150, label="Nombre(s)")
@@ -173,5 +180,6 @@ class EventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["event_date"].input_formats = ["%Y-%m-%dT%H:%M"]
         if self.instance and self.instance.pk and self.instance.event_date:
             self.initial["event_date"] = self.instance.event_date.strftime("%Y-%m-%dT%H:%M")

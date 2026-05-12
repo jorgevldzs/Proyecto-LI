@@ -63,15 +63,22 @@
       margin-bottom: 1.5rem;
     }
 
+    /* Normalize all buttons: flex centering and consistent base height */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
     .btn-biker {
       background-color: var(--biker-gold);
       color: black;
-      font-size: 1.2rem;
-      padding: 10px 25px;
-      border: none;
-      transition: 0.3s;
+      border: 2px solid var(--biker-gold);
+      transition: background-color 0.2s, color 0.2s;
     }
-    .btn-biker:hover { background-color: white; transform: scale(1.03); }
+    .btn-biker:hover { background-color: white; border-color: white; color: black; }
+    /* btn-sm / btn-lg scale normally via Bootstrap's size modifiers */
 
     /* Estilo para los inputs para que no desentonen con el tema oscuro */
     .form-control, .form-select {
@@ -122,6 +129,21 @@
         <li class="nav-item"><a class="nav-link px-3" href="{% url 'home' %}">Inicio</a></li>
         {% if user.is_authenticated %}
           <li class="nav-item"><a class="nav-link px-3" href="{% url 'profile' %}">Mi Perfil</a></li>
+          {% if user.member.status == 'active' %}
+            <li class="nav-item"><a class="nav-link px-3" href="{% url 'member_list' %}">Miembros</a></li>
+          {% endif %}
+          {% if user.is_staff %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle px-3" href="#" data-bs-toggle="dropdown">Panel Admin</a>
+              <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'panel_dashboard' %}">Dashboard</a></li>
+                <li><a class="dropdown-item" href="{% url 'panel_requests' %}">Solicitudes</a></li>
+                <li><a class="dropdown-item" href="{% url 'panel_all_members' %}">Todos los miembros</a></li>
+                <li><a class="dropdown-item" href="{% url 'panel_events' %}">Eventos</a></li>
+                <li><a class="dropdown-item" href="{% url 'panel_photos' %}">Fotos</a></li>
+              </ul>
+            </li>
+          {% endif %}
           <li class="nav-item">
             <form method="post" action="{% url 'logout' %}" class="d-inline">
               {% csrf_token %}
@@ -129,7 +151,7 @@
             </form>
           </li>
         {% else %}
-          <li class="nav-item"><a class="nav-link btn-biker ms-lg-3" href="{% url 'login' %}">Ingresar</a></li>
+          <li class="nav-item"><a class="nav-link btn-biker ms-lg-3 rounded-3" href="{% url 'login' %}">Ingresar</a></li>
         {% endif %}
       </ul>
     </div>
@@ -138,8 +160,10 @@
 
 <main class="container py-5">
   {% for message in messages %}
-    <div class="alert alert-dark border-warning text-warning" role="alert">
-      {{ message }}
+    <div class="d-flex align-items-center gap-3 px-4 py-3 mb-3 rounded"
+         style="background:#1a1a1a; border-left:4px solid var(--biker-gold); color:#f0f0f0;">
+      <i class="bi bi-check-circle-fill" style="color:var(--biker-gold); font-size:1.2rem; flex-shrink:0;"></i>
+      <span>{{ message }}</span>
     </div>
   {% endfor %}
   {% block content %}{% endblock %}

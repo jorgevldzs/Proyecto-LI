@@ -1,15 +1,38 @@
 {% extends "base.html" %}
 {% block title %}Mi Perfil — Rocky Point Riders{% endblock %}
 
+{% block extra_head %}
+<style>
+  .photo-avatar-wrap { cursor: pointer; }
+  .photo-avatar-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0);
+    border-radius: inherit;
+    transition: background 0.2s;
+  }
+  .photo-avatar-overlay i { opacity: 0; transition: opacity 0.2s; }
+  .photo-avatar-wrap:hover .photo-avatar-overlay { background: rgba(0,0,0,0.55); }
+  .photo-avatar-wrap:hover .photo-avatar-overlay i { opacity: 1; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="d-flex align-items-center gap-4 mb-5">
-  {% if member.photo %}
-    <img src="{{ member.photo.url }}" alt="Foto" class="rounded border border-2 border-warning shadow" style="width:100px;height:100px;object-fit:cover;">
-  {% else %}
-    <div class="rounded bg-dark border border-2 border-secondary d-flex align-items-center justify-content-center shadow" style="width:100px;height:100px;">
-      <i class="bi bi-person-fill text-secondary fs-1"></i>
+  <a href="{% url 'edit_photo' %}" class="position-relative d-inline-block photo-avatar-wrap"
+     title="Cambiar foto de perfil" style="width:100px;height:100px;">
+    {% if member.photo %}
+      <img src="{{ member.photo.url }}" alt="Foto"
+           class="rounded border border-2 border-warning shadow w-100 h-100"
+           style="object-fit:cover;">
+    {% else %}
+      <div class="rounded bg-dark border border-2 border-secondary d-flex align-items-center justify-content-center shadow w-100 h-100">
+        <i class="bi bi-person-fill text-secondary fs-1"></i>
+      </div>
+    {% endif %}
+    <div class="photo-avatar-overlay rounded d-flex align-items-center justify-content-center">
+      <i class="bi bi-camera-fill text-white fs-4"></i>
     </div>
-  {% endif %}
+  </a>
   <div>
     <h1 class="mb-1" style="font-family: 'Metal Mania'; font-size: 2.8rem; letter-spacing: 2px;">
       {{ request.user.get_full_name }}

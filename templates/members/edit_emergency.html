@@ -4,7 +4,7 @@
 {% block content %}
 <h3 class="mb-4"><i class="bi bi-telephone-plus-fill text-warning"></i> Editar contactos de emergencia</h3>
 <div class="section-card col-md-10">
-  <form method="post">
+  <form method="post" novalidate>
     {% csrf_token %}
     <h6 class="fw-semibold mb-3">Contacto 1 <span class="text-warning">*</span></h6>
     <div class="row g-3">

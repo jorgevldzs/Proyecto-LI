@@ -59,13 +59,98 @@
   <div class="row g-2">
     {% for photo in photos %}
       <div class="col-6 col-md-3">
-        <div class="overflow-hidden rounded-3 shadow-sm" style="height: 200px;">
+        <div class="overflow-hidden rounded-3 shadow-sm position-relative gallery-thumb"
+             style="height: 200px; cursor: pointer;"
+             data-src="{{ photo.image.url }}"
+             data-caption="{{ photo.caption }}">
           <img src="{{ photo.image.url }}" class="w-100 h-100" style="object-fit: cover;" alt="{{ photo.caption }}">
+          <div class="gallery-overlay d-flex align-items-center justify-content-center">
+            <i class="bi bi-fullscreen text-white fs-3"></i>
+          </div>
         </div>
       </div>
     {% endfor %}
   </div>
 </div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="d-none" onclick="closeLightbox()">
+  <button type="button" class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+  <p id="lightbox-caption" class="lightbox-caption"></p>
+</div>
 {% endif %}
 
+{% endblock %}
+
+{% block extra_head %}
+<style>
+  .gallery-thumb .gallery-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0);
+    transition: background 0.2s;
+  }
+  .gallery-thumb .gallery-overlay i { opacity: 0; transition: opacity 0.2s; }
+  .gallery-thumb:hover .gallery-overlay { background: rgba(0,0,0,0.45); }
+  .gallery-thumb:hover .gallery-overlay i { opacity: 1; }
+
+  #lightbox {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.93);
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+  }
+  #lightbox.d-none { display: none !important; }
+  #lightbox-img {
+    max-width: 92vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border: 2px solid var(--biker-gold);
+    border-radius: 4px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.8);
+  }
+  .lightbox-caption {
+    margin-top: 0.8rem;
+    color: #ccc;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  .lightbox-close {
+    position: fixed; top: 1.2rem; right: 1.5rem;
+    background: none; border: none;
+    color: var(--biker-gold); font-size: 2.5rem;
+    line-height: 1; cursor: pointer;
+    z-index: 10000;
+  }
+  .lightbox-close:hover { color: #fff; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+
+  document.querySelectorAll('.gallery-thumb').forEach(el => {
+    el.addEventListener('click', () => {
+      lightboxImg.src = el.dataset.src;
+      lightboxCaption.textContent = el.dataset.caption || '';
+      lightbox.classList.remove('d-none');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeLightbox() {
+    lightbox.classList.add('d-none');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+</script>
 {% endblock %}

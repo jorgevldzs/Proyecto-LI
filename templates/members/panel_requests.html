@@ -4,7 +4,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-5">
   <h2 class="section-title mb-0"><i class="bi bi-person-check-fill"></i> Solicitudes de Ingreso</h2>
-  <a href="{% url 'panel_dashboard' %}" class="btn btn-outline-light btn-sm">Panel</a>
+  <a href="{% url 'panel_dashboard' %}" class="btn btn-outline-warning btn-sm"><i class="bi bi-arrow-left me-1"></i> Panel</a>
 </div>
 
 {% if members %}
@@ -13,8 +13,15 @@
       <div class="col-md-6">
         <div class="section-card border-warning position-relative overflow-hidden">
           <div class="d-flex align-items-center gap-3 mb-4">
-            <img src="{% if m.photo %}{{ m.photo.url }}{% else %}https://via.placeholder.com/60{% endif %}" 
-                 class="rounded border border-secondary" style="width:60px;height:60px;object-fit:cover;">
+            {% if m.photo %}
+              <img src="{{ m.photo.url }}" class="rounded border border-secondary"
+                   style="width:60px;height:60px;object-fit:cover;">
+            {% else %}
+              <div class="rounded border border-secondary d-flex align-items-center justify-content-center flex-shrink-0"
+                   style="width:60px;height:60px;background:#111;">
+                <i class="bi bi-person-fill text-secondary fs-3"></i>
+              </div>
+            {% endif %}
             <div>
               <h5 class="text-white mb-0 fw-bold">{{ m.user.get_full_name }}</h5>
               <small class="text-warning text-uppercase">Pendiente de revisión</small>
@@ -27,10 +34,10 @@
           </div>
 
           <div class="d-flex gap-2">
-            <a href="{% url 'panel_member_detail' m.pk %}" class="btn btn-sm btn-outline-light flex-grow-1">Ver Perfil</a>
+            <a href="{% url 'panel_member_detail' m.pk %}" class="btn btn-outline-warning flex-grow-1">Ver Perfil</a>
             <form method="post" action="{% url 'panel_approve' m.pk %}" class="flex-grow-1">
               {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-biker w-100">Aprobar</button>
+              <button type="submit" class="btn btn-biker w-100">Aprobar</button>
             </form>
           </div>
         </div>

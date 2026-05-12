@@ -7,7 +7,7 @@ from django.db import transaction
 from .models import Member, HealthInfo, EmergencyContact, Vehicle
 from .forms import (
     PersonalDataForm, ContactForm, HealthForm, EmergencyContactForm, VehicleForm,
-    AcceptanceForm, EditContactForm, EditEmergencyContactForm, AddPhotoForm, EventForm,
+    AcceptanceForm, EditContactForm, EditEmergencyContactForm, EditPhotoForm, AddPhotoForm, EventForm,
 )
 from pages.models import Event, MainPagePhoto
 
@@ -161,6 +161,20 @@ def profile(request):
         "contacts": contacts,
         "vehicles": vehicles,
     })
+
+
+@login_required
+def edit_photo(request):
+    member = get_object_or_404(Member, user=request.user)
+    if request.method == "POST":
+        form = EditPhotoForm(request.POST, request.FILES, instance=member)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Foto de perfil actualizada.")
+            return redirect("profile")
+    else:
+        form = EditPhotoForm(instance=member)
+    return render(request, "members/edit_photo.html", {"form": form, "member": member})
 
 
 @login_required

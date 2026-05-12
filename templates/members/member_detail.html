@@ -20,46 +20,61 @@
   </div>
 </div>
 
+<!-- Información médica -->
 <div class="section-card">
-  <h3 class="section-title text-warning"><i class="bi bi-heart-pulse-fill"></i> Información Médica</h3>
+  <h5 class="section-title small text-warning"><i class="bi bi-heart-pulse-fill me-2"></i> Información de Salud</h5>
   {% if health %}
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="p-3 bg-black rounded border border-secondary">
-          <label class="small text-uppercase text-muted d-block">Tipo de Sangre</label>
-          <span class="display-5 fw-bold text-warning">{{ health.blood_type }}</span>
+    <div class="row g-3">
+      <div class="col-md-2 col-4">
+        <div class="p-3 bg-black rounded border border-secondary text-center">
+          <label class="small text-uppercase text-muted d-block">Sangre</label>
+          <span class="fs-3 fw-bold text-warning">{{ health.blood_type }}</span>
         </div>
       </div>
-      <div class="col-md-8">
-        <div class="row g-3">
-          <div class="col-6"><strong>Alergias:</strong> <p class="{% if health.has_allergies %}text-warning fw-bold{% else %}text-muted{% endif %}">{% if health.has_allergies %}{{ health.allergies_detail }}{% else %}Ninguna{% endif %}</p></div>
-          <div class="col-6"><strong>Seguro:</strong> <p class="text-white">{% if health.has_insurance %}{{ health.insurance_detail }}{% else %}No registrado{% endif %}</p></div>
-          <div class="col-12 border-top border-secondary pt-2">
-            <strong>Tratamientos/Medicamentos:</strong>
-            <p class="mb-0 text-white">{% if health.takes_medication %}{{ health.medication_detail }}{% else %}Sin medicación{% endif %}</p>
+      <div class="col-md-10 col-8">
+        <div class="row g-2">
+          <div class="col-md-6"><strong>Alergias:</strong>
+            <p class="mb-1 {% if health.has_allergies %}text-warning{% else %}text-muted{% endif %}">{% if health.has_allergies %}{{ health.allergies_detail }}{% else %}Ninguna{% endif %}</p>
+          </div>
+          <div class="col-md-6"><strong>Padecimiento físico:</strong>
+            <p class="mb-1 {% if health.has_physical_condition %}text-warning{% else %}text-muted{% endif %}">{% if health.has_physical_condition %}{{ health.physical_condition_detail }}{% else %}Ninguno{% endif %}</p>
+          </div>
+          <div class="col-md-6"><strong>Tratamiento médico:</strong>
+            <p class="mb-1 {% if health.under_medical_treatment %}text-warning{% else %}text-muted{% endif %}">{% if health.under_medical_treatment %}{{ health.treatment_detail }}{% else %}No{% endif %}</p>
+          </div>
+          <div class="col-md-6"><strong>Medicamentos:</strong>
+            <p class="mb-1 {% if health.takes_medication %}text-warning{% else %}text-muted{% endif %}">{% if health.takes_medication %}{{ health.medication_detail }}{% else %}Sin medicación{% endif %}</p>
+          </div>
+          <div class="col-12"><strong>Seguro médico:</strong>
+            <p class="mb-0 {% if health.has_insurance %}text-warning{% else %}text-muted{% endif %}">{% if health.has_insurance %}{{ health.insurance_detail }}{% else %}No registrado{% endif %}</p>
           </div>
         </div>
       </div>
     </div>
+  {% else %}
+    <p class="text-muted">Sin información de salud.</p>
   {% endif %}
 </div>
 
+<!-- Contactos de emergencia -->
 <div class="section-card border-secondary">
-  <h3 class="section-title"><i class="bi bi-telephone-plus-fill"></i> Contactos de Emergencia</h3>
-  <div class="row g-3">
-    {% for c in contacts %}
-      <div class="col-md-6">
-        <div class="p-3 bg-dark rounded d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="mb-1 text-white">{{ c.first_name }} {{ c.last_name }}</h5>
-            <span class="text-warning small">{{ c.relationship }}</span>
+  <h5 class="section-title small text-warning"><i class="bi bi-telephone-plus-fill me-2"></i> Contactos de Emergencia</h5>
+  {% if contacts %}
+    <div class="row g-3">
+      {% for c in contacts %}
+        <div class="col-md-6">
+          <div class="p-3 bg-dark rounded d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="mb-0 text-white">{{ c.first_name }} {{ c.last_name }}</h6>
+              <span class="text-warning small">{{ c.relationship }}</span>
+            </div>
+            <span class="text-muted">{{ c.phone }}</span>
           </div>
-          <a href="tel:{{ c.phone }}" class="btn btn-biker px-3">
-            <i class="bi bi-telephone-fill"></i> LLAMAR
-          </a>
         </div>
-      </div>
-    {% endfor %}
-  </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">Sin contactos de emergencia.</p>
+  {% endif %}
 </div>
 {% endblock %}
